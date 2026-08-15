@@ -16,11 +16,6 @@ services:
         value: "0.002"
       - key: PYTHONUNBUFFERED
         value: "1"
-    # Persistent disk for SQLite database (survives deploys)
-    disk:
-      name: medspa-data
-      mountPath: /app/data
-      sizeGB: 1
     # Health check endpoint
     healthCheckPath: /health
     # Auto-deploy on git push
@@ -29,22 +24,13 @@ services:
     # Upgrade to Starter for custom domains, more resources
     plan: free
 
-  # Optional: MCP Server as background worker (for agent access via stdio)
-  # Note: Render doesn't natively support stdio MCP servers well.
-  # Better to run MCP locally or on a VPS. Commenting out for now.
-  # - type: worker
-  #   name: medspa-mcp-server
-  #   runtime: docker
-  #   dockerfilePath: ./Dockerfile.mcp
-  #   envVars:
-  #     - key: PYTHONUNBUFFERED
-  #       value: "1"
-  #   disk:
-  #     name: medspa-data
-  #     mountPath: /app/data
-  #   plan: free
+# Database: SQLite file is copied into Docker image at build time (no persistent disk needed)
+# For production with persistent data, upgrade to Starter plan and add disk:
+# disk:
+#   name: medspa-data
+#   mountPath: /app/data
+#   sizeGB: 1
 
-# Database is SQLite file on persistent disk - no managed PostgreSQL needed
 # If you need PostgreSQL later for scaling, uncomment below:
 # databases:
 #   - name: medspa-postgres
