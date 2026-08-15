@@ -32,12 +32,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY scraper.py server.py mcp_server.py medspa_data.db ./
+COPY scraper.py server.py mcp_server.py ./
 
-# Ensure database is writable (Render/Cloudflare persistent disk mount point)
-RUN mkdir -p /app/data && \
-    cp medspa_data.db /app/data/medspa_data.db && \
-    ln -sf /app/data/medspa_data.db /app/medspa_data.db
+# Build-time database initialization (SQLite file is baked into the image)
+# scraper.py uses beautifulsoup4 + httpx (already installed in builder stage via requirements.txt)
+RUN /app/.venv/bin/python scraper.py
 
 # Expose port
 EXPOSE 8000
