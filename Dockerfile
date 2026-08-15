@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY scraper.py server.py mcp_server.py ./
+COPY scraper.py server.py mcp_server.py llms.json ./
 
 # Build-time database initialization (SQLite file is baked into the image)
 # scraper.py uses beautifulsoup4 + httpx (already installed in builder stage via requirements.txt)
