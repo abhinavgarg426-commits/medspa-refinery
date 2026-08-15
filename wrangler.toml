@@ -1,0 +1,28 @@
+# Cloudflare Workers Deployment Configuration
+# For Cloudflare Pay-Per-Crawl + Workers (zero-code x402 alternative)
+# Deploy with: npx wrangler deploy
+
+# wrangler.toml
+name = "medspa-refinery-api"
+main = "src/worker.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# KV namespace for caching clinic data (optional)
+# [[kv_namespaces]]
+# binding = "MEDSPA_CACHE"
+# id = "your-kv-namespace-id"
+
+# Environment variables (set in Cloudflare dashboard)
+# RECEIVING_WALLET = "0xYourWalletAddress"
+# PRICE_PER_REQUEST_USD = "0.002"
+
+# Custom domain (optional)
+# routes = [
+#   { pattern = "api.yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]
+
+[build]
+command = "echo 'Using native Workers - no build step'"
+
+# For local development: npx wrangler dev

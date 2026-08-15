@@ -1,0 +1,7 @@
+# Python dependencies for Miami MedSpa Data Refinery
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+httpx>=0.26.0
+beautifulsoup4>=4.12.0
+x402>=2.19.0
+sqlite3  # stdlib
