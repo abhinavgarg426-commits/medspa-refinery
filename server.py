@@ -144,6 +144,10 @@ def root():
 def health():
     return {"status": "ok"}
 
+@app.head("/health")
+def health_head():
+    return Response(status_code=200)
+
 @app.get("/api/v1/clinics")
 def list_clinics(city: Optional[str] = None):
     if city:
