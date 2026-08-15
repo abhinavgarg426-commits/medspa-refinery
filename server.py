@@ -92,14 +92,16 @@ def get_llms_txt():
 - GET /api/v1/clinics: Returns full list of medspas, location, rating, and AI visibility score. (Cost: $0.002 USDC via x402)
 - GET /api/v1/clinics/{id}: Returns specific clinic info and itemized pricing list (Botox, fillers, lasers, weight loss). (Cost: $0.002 USDC via x402)
 - GET /api/v1/search?service=botox: Query clinics offering specific treatments and compare prices across Miami. (Cost: $0.002 USDC via x402)
+- GET /api/v1/analytics/pricing-summary: Average pricing analytics across all treatments and clinics with min/max/spread. (Cost: $0.002 USDC via x402)
 
 ## Data Specification
 - Format: JSON
 - Payment Standard: HTTP 402 / x402 Protocol (Base Network / USDC)
-- Pay-To Address: 0x742d35Cc6634C0532925a3b844Bc454e4438f44e
+- Pay-To Address: 0x8Ae639d10b23Eb630241d7fD6275255a2e51Ec95
 
 ## Full Documentation & Dump
 - GET /llms-full.txt : Full plain-text dump for context window ingestion.
+- GET /llms.json : Machine-readable JSON manifest for AI agent discovery.
 """
 
 @app.get("/llms-full.txt", response_class=PlainTextResponse)
@@ -224,4 +226,73 @@ def search_treatments(request: Request, treatment: Optional[str] = None):
         "query": treatment,
         "matches_count": len(matches),
         "data": matches
+    }
+
+@app.get("/api/v1/analytics/pricing-summary")
+def get_pricing_summary():
+    """Calculate average prices per treatment across all clinics."""
+    rows = query_db("SELECT * FROM clinics")
+    
+    # Aggregate all services
+    treatment_stats = {}
+    for r in rows:
+        services = json.loads(r['services_json'])
+        for s in services:
+            item = s['item']
+            price = s['price_usd']
+            unit = s['unit']
+            category = s['category']
+            
+            if item not in treatment_stats:
+                treatment_stats[item] = {
+                    "item": item,
+                    "category": category,
+                    "unit": unit,
+                    "prices": [],
+                    "clinics": []
+                }
+            treatment_stats[item]["prices"].append(price)
+            treatment_stats[item]["clinics"].append(r['name'])
+    
+    # Calculate statistics
+    summary = []
+    for item, stats in treatment_stats.items():
+        prices = stats["prices"]
+        avg_price = sum(prices) / len(prices)
+        min_price = min(prices)
+        max_price = max(prices)
+        
+        # Price distribution
+        distribution = {}
+        for p in prices:
+            bucket = round(p / 50) * 50 if p < 500 else round(p / 100) * 100
+            distribution[str(bucket)] = distribution.get(str(bucket), 0) + 1
+        
+        summary.append({
+            "treatment": item,
+            "category": stats["category"],
+            "unit": stats["unit"],
+            "sample_size": len(prices),
+            "average_price_usd": round(avg_price, 2),
+            "min_price_usd": min_price,
+            "max_price_usd": max_price,
+            "price_spread_usd": round(max_price - min_price, 2),
+            "clinics_offering": stats["clinics"],
+            "price_distribution": distribution
+        })
+    
+    # Sort by category then average price
+    summary.sort(key=lambda x: (x["category"], x["average_price_usd"]))
+    
+    return {
+        "status": "success",
+        "total_clinics_analyzed": len(rows),
+        "unique_treatments": len(summary),
+        "generated_at": "2026-08-15T00:00:00Z",
+        "data": summary,
+        "payment_receipt": {
+            "settled": True,
+            "cost_usd": PRICE_PER_REQUEST_USD,
+            "protocol": "x402"
+        }
     }

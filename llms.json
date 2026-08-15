@@ -204,6 +204,56 @@
           }
         }
       }
+    },
+    {
+      "name": "Pricing Analytics Summary",
+      "path": "/api/v1/analytics/pricing-summary",
+      "method": "GET",
+      "description": "Calculates average prices per treatment across all clinics with min/max/spread, sample size, and clinic list. Aggregated market intelligence for pricing strategy.",
+      "costUsd": 0.002,
+      "paymentRequired": true,
+      "parameters": [],
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["success"] },
+          "total_clinics_analyzed": { "type": "integer" },
+          "unique_treatments": { "type": "integer" },
+          "generated_at": { "type": "string" },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "treatment": { "type": "string" },
+                "category": { "type": "string" },
+                "unit": { "type": "string" },
+                "sample_size": { "type": "integer" },
+                "average_price_usd": { "type": "number" },
+                "min_price_usd": { "type": "number" },
+                "max_price_usd": { "type": "number" },
+                "price_spread_usd": { "type": "number" },
+                "clinics_offering": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "price_distribution": {
+                  "type": "object",
+                  "additionalProperties": { "type": "integer" }
+                }
+              }
+            }
+          },
+          "payment_receipt": {
+            "type": "object",
+            "properties": {
+              "settled": { "type": "boolean" },
+              "cost_usd": { "type": "number" },
+              "protocol": { "type": "string" }
+            }
+          }
+        }
+      }
     }
   ],
   "publicEndpoints": [
