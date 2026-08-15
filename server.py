@@ -187,7 +187,13 @@ def get_clinic_by_id(clinic_id: int):
     }
 
 @app.get("/api/v1/search")
-def search_treatments(treatment: str):
+def search_treatments(request: Request, treatment: Optional[str] = None):
+    # Support both 'treatment' and 'service' query parameters
+    treatment = treatment or request.query_params.get("service")
+    
+    if not treatment:
+        raise HTTPException(status_code=400, detail="Missing required query parameter: 'treatment' or 'service'")
+
     rows = query_db("SELECT * FROM clinics")
     matches = []
     
