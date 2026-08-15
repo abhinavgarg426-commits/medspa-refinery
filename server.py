@@ -31,7 +31,7 @@ def query_db(query, args=(), one=False):
 # ------------------------------------------------------------------
 class X402PaymentMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        public_paths = ["/", "/docs", "/openapi.json", "/llms.txt", "/llms-full.txt", "/health"]
+        public_paths = ["/", "/docs", "/openapi.json", "/llms.txt", "/llms-full.txt", "/llms.json", "/health"]
         if request.url.path in public_paths:
             return await call_next(request)
 
@@ -125,6 +125,15 @@ def get_llms_full_txt():
         output.append("\n-----------------------------------------------------\n\n")
 
     return "".join(output)
+
+@app.get("/llms.json")
+def get_llms_json():
+    import pathlib
+    manifest_path = pathlib.Path(__file__).parent / "llms.json"
+    if manifest_path.exists():
+        with open(manifest_path, "r") as f:
+            return json.load(f)
+    return {"error": "llms.json manifest not found"}
 
 # ------------------------------------------------------------------
 # Public & Monetized API Routes
