@@ -1,15 +1,15 @@
 {
   "$schema": "https://llms.json/schemas/llms.json",
-  "version": "1.0",
-  "name": "Miami MedSpa Data Refinery",
-  "description": "Machine-readable structured database of local aesthetic clinics, pricing, services, and AI visibility readiness scores in Miami, FL. Powered by x402 HTTP 402 micropayments for autonomous AI agent access.",
+  "version": "2.0.0",
+  "name": "Universal Agent Knowledge Graph API (\"Google for AI Agents\")",
+  "description": "Structured, queryable discovery engine and knowledge graph for 200+ local venues across cafes, restaurants, hotels, and medspas in Miami, FL. Powered by x402 HTTP 402 micropayments for autonomous AI agent access.",
   "homepage": "https://medspa-refinery-api-44xz.onrender.com",
   "repository": "https://github.com/abhinavgarg426-commits/medspa-refinery",
   "documentation": "https://medspa-refinery-api-44xz.onrender.com/llms.txt",
   "fullDump": "https://medspa-refinery-api-44xz.onrender.com/llms-full.txt",
   "contact": {
-    "email": "api@medspa-refinery.example.com",
-    "twitter": "@medsparefinery"
+    "email": "agent-browser@example.com",
+    "twitter": "@agentbrowser"
   },
   "license": "MIT",
   "payment": {
@@ -19,157 +19,33 @@
     "chainId": 8453,
     "currency": "USDC",
     "payToAddress": "0x8Ae639d10b23Eb630241d7fD6275255a2e51Ec95",
-    "pricePerRequestUsd": 0.002,
-    "priceUnits": 2000,
+    "priceStandardUsd": 0.002,
+    "priceRecommendUsd": 0.005,
     "scheme": "exact"
   },
+  "categories": ["cafe", "restaurant", "hotel", "medspa"],
   "endpoints": [
     {
-      "name": "List Clinics",
-      "path": "/api/v1/clinics",
-      "method": "GET",
-      "description": "Returns full list of medspas with location, rating, and AI visibility score. Supports optional city filter.",
-      "costUsd": 0.002,
-      "paymentRequired": true,
-      "parameters": [
-        {
-          "name": "city",
-          "type": "string",
-          "required": false,
-          "description": "Filter clinics by city (e.g., miami)"
-        }
-      ],
-      "responseSchema": {
-        "type": "object",
-        "properties": {
-          "status": { "type": "string", "enum": ["success"] },
-          "count": { "type": "integer" },
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": { "type": "integer" },
-                "name": { "type": "string" },
-                "city": { "type": "string" },
-                "state": { "type": "string" },
-                "address": { "type": "string" },
-                "phone": { "type": "string" },
-                "website": { "type": "string" },
-                "rating": { "type": "number" },
-                "reviews_count": { "type": "integer" },
-                "ai_visibility_score": { "type": "integer" },
-                "last_updated": { "type": "string" },
-                "services": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "category": { "type": "string" },
-                      "item": { "type": "string" },
-                      "price_usd": { "type": "number" },
-                      "unit": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "payment_receipt": {
-            "type": "object",
-            "properties": {
-              "settled": { "type": "boolean" },
-              "cost_usd": { "type": "number" },
-              "protocol": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "Get Clinic by ID",
-      "path": "/api/v1/clinics/{clinic_id}",
-      "method": "GET",
-      "description": "Returns specific clinic info and itemized pricing list (Botox, fillers, lasers, weight loss).",
-      "costUsd": 0.002,
-      "paymentRequired": true,
-      "parameters": [
-        {
-          "name": "clinic_id",
-          "type": "integer",
-          "required": true,
-          "description": "Unique clinic identifier"
-        }
-      ],
-      "responseSchema": {
-        "type": "object",
-        "properties": {
-          "status": { "type": "string", "enum": ["success"] },
-          "data": {
-            "type": "object",
-            "properties": {
-              "id": { "type": "integer" },
-              "name": { "type": "string" },
-              "city": { "type": "string" },
-              "state": { "type": "string" },
-              "address": { "type": "string" },
-              "phone": { "type": "string" },
-              "website": { "type": "string" },
-              "rating": { "type": "number" },
-              "reviews_count": { "type": "integer" },
-              "ai_visibility_score": { "type": "integer" },
-              "last_updated": { "type": "string" },
-              "services": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "category": { "type": "string" },
-                    "item": { "type": "string" },
-                    "price_usd": { "type": "number" },
-                    "unit": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "payment_receipt": {
-            "type": "object",
-            "properties": {
-              "settled": { "type": "boolean" },
-              "cost_usd": { "type": "number" },
-              "protocol": { "type": "string" }
-            }
-          }
-        }
-      }
-    },
-    {
-      "name": "Search Treatments",
+      "name": "Universal Intent Search",
       "path": "/api/v1/search",
       "method": "GET",
-      "description": "Query clinics offering specific treatments and compare prices across Miami. Supports 'treatment' or 'service' query parameters.",
+      "description": "Multi-category intent search across cafes, restaurants, hotels, and medspas. Accepts natural language queries (e.g., 'wifi cafes in Wynwood') or structured filter parameters.",
       "costUsd": 0.002,
       "paymentRequired": true,
       "parameters": [
-        {
-          "name": "treatment",
-          "type": "string",
-          "required": true,
-          "description": "Treatment name to search for (e.g., botox, fillers, laser)"
-        },
-        {
-          "name": "service",
-          "type": "string",
-          "required": false,
-          "description": "Alias for treatment parameter"
-        }
+        { "name": "query", "type": "string", "required": false, "description": "Natural language query or keywords" },
+        { "name": "category", "type": "string", "required": false, "description": "Filter by venue category: cafe, restaurant, hotel, medspa" },
+        { "name": "neighborhood", "type": "string", "required": false, "description": "Filter by Miami area (e.g., Wynwood, Brickell, South Beach)" },
+        { "name": "min_rating", "type": "number", "required": false, "description": "Minimum overall rating (1.0 - 5.0)" },
+        { "name": "max_price_level", "type": "string", "required": false, "description": "Maximum price level: $, $$, $$$, $$$$" },
+        { "name": "limit", "type": "integer", "required": false, "default": 10, "description": "Maximum results to return" }
       ],
       "responseSchema": {
         "type": "object",
         "properties": {
           "status": { "type": "string", "enum": ["success"] },
           "query": { "type": "string" },
+          "classified_intent": { "type": "string" },
           "matches_count": { "type": "integer" },
           "data": {
             "type": "array",
@@ -178,143 +54,112 @@
               "properties": {
                 "id": { "type": "integer" },
                 "name": { "type": "string" },
-                "city": { "type": "string" },
-                "state": { "type": "string" },
+                "category": { "type": "string" },
+                "sub_category": { "type": "string" },
                 "address": { "type": "string" },
-                "phone": { "type": "string" },
-                "website": { "type": "string" },
-                "rating": { "type": "number" },
-                "reviews_count": { "type": "integer" },
-                "ai_visibility_score": { "type": "integer" },
-                "last_updated": { "type": "string" },
-                "matching_services": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "category": { "type": "string" },
-                      "item": { "type": "string" },
-                      "price_usd": { "type": "number" },
-                      "unit": { "type": "string" }
-                    }
-                  }
-                }
+                "neighborhood": { "type": "string" },
+                "price_level": { "type": "string" },
+                "overall_rating": { "type": "number" },
+                "safety_score": { "type": "number" },
+                "value_score": { "type": "number" },
+                "ambiance_score": { "type": "number" },
+                "service_score": { "type": "number" },
+                "sentiment_tags": { "type": "array", "items": { "type": "string" } },
+                "agent_match_index": { "type": "number" },
+                "_rationale": { "type": "string" }
               }
             }
-          }
+          },
+          "payment_receipt": { "type": "object" }
         }
       }
+    },
+    {
+      "name": "Agent Recommendation Engine",
+      "path": "/api/v1/recommend",
+      "method": "POST",
+      "description": "Multi-category recommendation engine that processes agent intent payloads and returns ranked matches scored by Agent Match Index (0-100) with detailed rationale.",
+      "costUsd": 0.005,
+      "paymentRequired": true,
+      "requestBodySchema": {
+        "type": "object",
+        "required": ["category"],
+        "properties": {
+          "category": { "type": "string", "description": "cafe, restaurant, hotel, medspa" },
+          "preferred_area": { "type": "string", "description": "Neighborhood preference" },
+          "required_features": { "type": "array", "items": { "type": "string" }, "description": "e.g., ['fast_wifi', 'outdoor_seating', 'parking']" },
+          "max_price_level": { "type": "string", "description": "$, $$, $$$, $$$$" },
+          "min_rating": { "type": "number", "description": "Minimum overall rating" },
+          "limit": { "type": "integer", "default": 5 }
+        }
+      },
+      "responseSchema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["success"] },
+          "intent_payload": { "type": "object" },
+          "recommendations_count": { "type": "integer" },
+          "data": { "type": "array" },
+          "payment_receipt": { "type": "object" }
+        }
+      }
+    },
+    {
+      "name": "List Venues",
+      "path": "/api/v1/venues",
+      "method": "GET",
+      "description": "List and filter venues by category, neighborhood, rating.",
+      "costUsd": 0.002,
+      "paymentRequired": true,
+      "parameters": [
+        { "name": "category", "type": "string" },
+        { "name": "neighborhood", "type": "string" },
+        { "name": "min_rating", "type": "number" },
+        { "name": "limit", "type": "integer", "default": 20 }
+      ]
+    },
+    {
+      "name": "Get Venue Details",
+      "path": "/api/v1/venues/{venue_id}",
+      "method": "GET",
+      "description": "Detailed venue information including all catalog offerings, pricing, scores, and sentiment tags.",
+      "costUsd": 0.002,
+      "paymentRequired": true,
+      "parameters": [
+        { "name": "venue_id", "type": "integer", "required": true }
+      ]
     },
     {
       "name": "Pricing Analytics Summary",
       "path": "/api/v1/analytics/pricing-summary",
       "method": "GET",
-      "description": "Calculates average prices per treatment across all clinics with min/max/spread, sample size, and clinic list. Aggregated market intelligence for pricing strategy.",
+      "description": "Category-specific price analytics across all offerings (average, min, max, spread).",
       "costUsd": 0.002,
       "paymentRequired": true,
-      "parameters": [],
-      "responseSchema": {
-        "type": "object",
-        "properties": {
-          "status": { "type": "string", "enum": ["success"] },
-          "total_clinics_analyzed": { "type": "integer" },
-          "unique_treatments": { "type": "integer" },
-          "generated_at": { "type": "string" },
-          "data": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "treatment": { "type": "string" },
-                "category": { "type": "string" },
-                "unit": { "type": "string" },
-                "sample_size": { "type": "integer" },
-                "average_price_usd": { "type": "number" },
-                "min_price_usd": { "type": "number" },
-                "max_price_usd": { "type": "number" },
-                "price_spread_usd": { "type": "number" },
-                "clinics_offering": {
-                  "type": "array",
-                  "items": { "type": "string" }
-                },
-                "price_distribution": {
-                  "type": "object",
-                  "additionalProperties": { "type": "integer" }
-                }
-              }
-            }
-          },
-          "payment_receipt": {
-            "type": "object",
-            "properties": {
-              "settled": { "type": "boolean" },
-              "cost_usd": { "type": "number" },
-              "protocol": { "type": "string" }
-            }
-          }
-        }
-      }
+      "parameters": [
+        { "name": "category", "type": "string", "required": false, "description": "cafe, restaurant, hotel, medspa" }
+      ]
     }
   ],
   "publicEndpoints": [
-    {
-      "name": "Health Check",
-      "path": "/health",
-      "method": "GET",
-      "description": "Health check endpoint for monitoring. No payment required."
-    },
-    {
-      "name": "LLM Index (Text)",
-      "path": "/llms.txt",
-      "method": "GET",
-      "description": "Machine-readable index for AI crawlers. No payment required."
-    },
-    {
-      "name": "LLM Full Dump (Text)",
-      "path": "/llms-full.txt",
-      "method": "GET",
-      "description": "Full plain-text dataset dump for context window ingestion. No payment required."
-    },
-    {
-      "name": "LLM Index (JSON)",
-      "path": "/llms.json",
-      "method": "GET",
-      "description": "Machine-readable JSON manifest for AI agent discovery. No payment required."
-    },
-    {
-      "name": "API Documentation",
-      "path": "/docs",
-      "method": "GET",
-      "description": "Interactive OpenAPI/Swagger documentation. No payment required."
-    }
+    { "name": "Health Check", "path": "/health", "method": "GET" },
+    { "name": "LLM Index (Text)", "path": "/llms.txt", "method": "GET" },
+    { "name": "LLM Full Dump (Text)", "path": "/llms-full.txt", "method": "GET" },
+    { "name": "LLM Index (JSON)", "path": "/llms.json", "method": "GET" },
+    { "name": "API Documentation", "path": "/docs", "method": "GET" }
   ],
-  "examples": {
-    "curl": {
-      "description": "Query botox pricing with mock payment header (for testing)",
-      "command": "curl -H \"X-Mock-Payment-Paid: true\" \"https://medspa-refinery-api-44xz.onrender.com/api/v1/search?treatment=botox\""
-    },
-    "x402_flow": {
-      "description": "Standard x402 payment flow for autonomous agents",
-      "steps": [
-        "GET /api/v1/search?treatment=botox",
-        "Receive 402 with PAYMENT-REQUIRED header (base64 x402 spec)",
-        "Decode spec, sign USDC transfer on Base (chain 8453) to pay_to address",
-        "Retry request with PAYMENT-SIGNATURE header containing tx hash",
-        "Receive 200 with data + payment_receipt"
-      ]
-    }
-  },
   "tags": [
-    "medspa",
-    "aesthetic",
-    "clinic",
-    "pricing",
-    "miami",
+    "agent-browser",
+    "google-for-agents",
+    "knowledge-graph",
     "x402",
     "http-402",
-    "micropayments",
     "agent-economy",
-    "ai-readiness",
-    "structured-data"
+    "cafes",
+    "restaurants",
+    "hotels",
+    "medspas",
+    "miami",
+    "pricing-analytics"
   ]
 }

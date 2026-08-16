@@ -32,11 +32,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY scraper.py server.py mcp_server.py llms.json ./
+COPY scraper.py server.py mcp_server.py llms.json agent_browser.py seed_universal.py ./
 
 # Build-time database initialization (SQLite file is baked into the image)
-# scraper.py uses beautifulsoup4 + httpx (already installed in builder stage via requirements.txt)
-RUN /app/.venv/bin/python scraper.py
+RUN /app/.venv/bin/python seed_universal.py
 
 # Expose port
 EXPOSE 8000
