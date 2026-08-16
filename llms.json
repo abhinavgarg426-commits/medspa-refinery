@@ -23,7 +23,7 @@
     "priceRecommendUsd": 0.005,
     "scheme": "exact"
   },
-  "categories": ["cafe", "restaurant", "hotel", "medspa"],
+  "categories": ["cafe", "restaurant", "hotel", "medspa", "dentist", "doctor", "nutritionist", "gym", "bar", "bakery", "salon", "retail", "veterinarian", "real_estate"],
   "endpoints": [
     {
       "name": "Universal Intent Search",

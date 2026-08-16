@@ -32,10 +32,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY scraper.py server.py mcp_server.py llms.json agent_browser.py seed_universal.py ./
+COPY scraper.py server.py mcp_server.py llms.json agent_browser.py seed_universal.py seed_us_wide.py seed_production_lean.py ./
 
 # Build-time database initialization (SQLite file is baked into the image)
-RUN /app/.venv/bin/python seed_universal.py
+RUN /app/.venv/bin/python seed_production_lean.py
 
 # Expose port
 EXPOSE 8000

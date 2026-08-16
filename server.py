@@ -37,8 +37,8 @@ PRICE_RECOMMEND_UNITS = 5000
 
 app = FastAPI(
     title="Universal Agent Browser & Local Intelligence API",
-    description="The Google for AI Agents: Queryable, structured knowledge graph covering cafes, restaurants, hotels, and medspas in Miami. Monetized via x402 HTTP 402 micropayments on Base.",
-    version="2.0.0"
+    description="The Google for AI Agents: Queryable, structured knowledge graph covering 1,500+ venues across 14 categories (cafes, restaurants, hotels, medspas, dentists, doctors, nutritionists, gyms, bars, bakeries, salons, retail, veterinarians, real estate) in 50 US cities. Monetized via x402 HTTP 402 micropayments on Base network (USDC).",
+    version="2.1.0"
 )
 
 
@@ -57,7 +57,7 @@ def query_db(query, args=(), one=False):
 # ------------------------------------------------------------------
 class X402PaymentMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        public_paths = ["/", "/docs", "/openapi.json", "/llms.txt", "/llms-full.txt", "/llms.json", "/health"]
+        public_paths = ["/", "/docs", "/openapi.json", "/llms.txt", "/llms-full.txt", "/llms.json", "/health", "/stats"]
         if request.url.path in public_paths:
             return await call_next(request)
 
@@ -378,5 +378,53 @@ def get_pricing_summary(category: Optional[str] = None):
             "settled": True,
             "cost_usd": PRICE_STANDARD_USD,
             "protocol": "x402"
+        }
+    }
+
+
+# Public stats endpoint (no payment required) - shows API stats
+@app.get("/stats")
+def get_stats():
+    """Public API stats - free endpoint."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT COUNT(*) FROM venues")
+    total_venues = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT COUNT(*) FROM offerings")
+    total_offerings = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT category, COUNT(*) FROM venues GROUP BY category")
+    by_category = dict(cursor.fetchall())
+    
+    cursor.execute("SELECT city, COUNT(*) FROM venues GROUP BY city ORDER BY COUNT(*) DESC LIMIT 10")
+    top_cities = [{"city": c, "count": n} for c, n in cursor.fetchall()]
+    
+    conn.close()
+    
+    return {
+        "status": "online",
+        "total_venues": total_venues,
+        "total_offerings": total_offerings,
+        "categories": list(by_category.keys()),
+        "by_category": by_category,
+        "top_cities": top_cities,
+        "pricing": {
+            "search_usd": PRICE_STANDARD_USD,
+            "recommend_usd": PRICE_RECOMMEND_USD,
+            "currency": "USDC",
+            "network": "base",
+            "pay_to": RECEIVING_WALLET
+        },
+        "endpoints": {
+            "free": ["/", "/health", "/stats", "/llms.txt", "/llms-full.txt", "/llms.json", "/docs"],
+            "monetized": [
+                {"path": "/api/v1/search", "cost": PRICE_STANDARD_USD},
+                {"path": "/api/v1/recommend", "cost": PRICE_RECOMMEND_USD},
+                {"path": "/api/v1/venues", "cost": PRICE_STANDARD_USD},
+                {"path": "/api/v1/venues/{id}", "cost": PRICE_STANDARD_USD},
+                {"path": "/api/v1/analytics/pricing-summary", "cost": PRICE_STANDARD_USD}
+            ]
         }
     }
